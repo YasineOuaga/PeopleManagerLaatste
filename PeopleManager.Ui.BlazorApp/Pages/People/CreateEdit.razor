@@ -1,0 +1,53 @@
+﻿@using PeopleManager.Dto.Requests
+@using PeopleManager.Dto.Results
+@using PeopleManager.Sdk
+@using Vives.Services.Model
+
+@inject OrganizationSdk OrganizationSdk
+
+@if (Model is not null)
+{
+    <div class="mb-3">
+        <label for="FirstName" class="form-label">First name</label>
+        <InputText id="FirstName" @bind-value="Model.FirstName" class="form-control"></InputText>
+        <ValidationMessage For="() => Model.FirstName"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label for="LastName" class="form-label">Last name</label>
+        <InputText id="LastName" @bind-value="Model.LastName" class="form-control"></InputText>
+        <ValidationMessage For="() => Model.LastName"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label for="Email" class="form-label">Email address</label>
+        <InputText type="email" id="Email" @bind-value="Model.Email" class="form-control"></InputText>
+        <ValidationMessage For="() => Model.Email"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label for="OrganizationId" class="form-label">Organization</label>
+        <InputSelect @bind-value="Model.OrganizationId" id="OrganizationId" class="form-control">
+            <option value="">Please select...</option>
+            @foreach (var organization in Organizations)
+            {
+                <option value="@organization.Id">@organization.Name</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => Model.OrganizationId"></ValidationMessage>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public PersonRequest? Model { get; set; }
+
+    private IList<OrganizationResult> Organizations { get; set; } = new List<OrganizationResult>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var paging = new Paging { Limit = 1000 };
+        var organizations = await OrganizationSdk.Find(paging);
+        Organizations = organizations;
+
+        await base.OnInitializedAsync();
+    }
+
+}

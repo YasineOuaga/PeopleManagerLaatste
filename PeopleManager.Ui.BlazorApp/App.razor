@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+@inject NavigationManager NavigationManager
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                @{
+                    var signInRoute = AppRoutes.Account.SignIn;
+                    var uri = NavigationManager.Uri;
+                    var baseUri = NavigationManager.BaseUri;
+                    var relativeUrl = uri.Substring(baseUri.Length - 1, uri.Length - baseUri.Length + 1);
+                    NavigationManager.NavigateTo($"{signInRoute}?returnUrl={relativeUrl}");
+                }
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>

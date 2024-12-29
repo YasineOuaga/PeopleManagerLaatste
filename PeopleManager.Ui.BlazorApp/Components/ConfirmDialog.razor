@@ -1,0 +1,66 @@
+﻿@if (IsOpen)
+{
+    <div class="modal fade show" style="display:block;" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        @Title
+                    </h5>
+                    <button type="button" class="btn-close" @onclick="Cancel" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @Body
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Cancel">@CancelButtonText</button>
+                    <button type="button" class="btn btn-primary" @onclick="Confirm">@ConfirmButtonText</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public RenderFragment? Title { get; set; }
+
+    [Parameter, EditorRequired]
+    public RenderFragment? Body { get; set; }
+
+    [Parameter] 
+    public string ConfirmButtonText { get; set; } = "Yes";
+
+    [Parameter] 
+    public string CancelButtonText { get; set; } = "No";
+
+    [Parameter]
+    public EventCallback ConfirmClicked { get; set; }
+
+    [Parameter]
+    public EventCallback CancelClicked { get; set; }
+
+    private bool IsOpen { get; set; }
+
+    public void Show()
+    {
+        IsOpen = true;
+    }
+
+    public void Hide()
+    {
+        IsOpen = false;
+    }
+
+    private Task Confirm()
+    {
+        Hide();
+        return ConfirmClicked.InvokeAsync();
+    }
+
+    private Task Cancel()
+    {
+        Hide();
+        return CancelClicked.InvokeAsync();
+    }
+}

@@ -1,0 +1,64 @@
+﻿@using PeopleManager.Dto.Requests
+@using PeopleManager.Sdk
+
+@attribute [Route(AppRoutes.People.Edit)]
+@inherits AdminPageComponent
+
+@inject PersonSdk PersonSdk
+
+@inject NavigationManager NavigationManager
+
+<h3>Create</h3>
+
+@if (Model is not null)
+{
+    <EditForm Model="Model" OnValidSubmit="EditPerson">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+
+        <CreateEdit Model="Model"></CreateEdit>
+
+        <a class="btn btn-primary" href="@AppRoutes.People.Index">Back</a>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private PersonRequest? Model { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await PersonSdk.Get(Id);
+        if (result.IsSuccess && result.Data is not null)
+        {
+            var personRequest = new PersonRequest
+                {
+                    FirstName = result.Data.FirstName,
+                    LastName = result.Data.LastName,
+                    Email = result.Data.Email,
+                    OrganizationId = result.Data.OrganizationId
+                };
+
+            Model = personRequest;
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task EditPerson()
+    {
+        if (Model is null)
+        {
+            return;
+        }
+
+        await PersonSdk.Update(Id, Model);
+
+        //If something was wrong, we ignore it for now :)
+
+        NavigationManager.NavigateTo(AppRoutes.People.Index);
+    }
+}

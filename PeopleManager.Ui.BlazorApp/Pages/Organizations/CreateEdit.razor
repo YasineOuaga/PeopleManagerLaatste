@@ -1,0 +1,21 @@
+﻿@using PeopleManager.Dto.Requests
+
+@if (Model is not null)
+{
+    <div class="mb-3">
+        <label for="Name" class="form-label">Name</label>
+        <InputText id="Name" @bind-value="Model.Name" class="form-control"></InputText>
+        <ValidationMessage For="() => Model.Name"></ValidationMessage>
+    </div>
+    <div class="mb-3">
+        <label for="Description" class="form-label">Description</label>
+        <InputTextArea id="Description" @bind-value="Model.Description" class="form-control"></InputTextArea>
+        <ValidationMessage For="() => Model.Description"></ValidationMessage>
+    </div>
+   
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public OrganizationRequest? Model { get; set; }
+}

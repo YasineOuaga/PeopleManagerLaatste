@@ -1,0 +1,42 @@
+﻿@attribute [Route(AppRoutes.Organizations.Index)]
+@inherits AdminPageComponent
+
+@using PeopleManager.Dto.Results
+@using PeopleManager.Sdk
+@using Vives.Services.Model
+
+@inject OrganizationSdk OrganizationSdk
+
+<PageTitle>Organizations</PageTitle>
+<h3>Organizations</h3>
+
+<a class="btn btn-primary" href="@AppRoutes.Organizations.Create">New Organization</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var organization in Organizations)
+        {
+            <OrganizationRow Model="organization" />
+        }
+    </tbody>
+</table>
+
+@code {
+    private IList<OrganizationResult> Organizations { get; set; } = new List<OrganizationResult>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var paging = new Paging { Limit = 1000 };
+        var result = await OrganizationSdk.Find(paging);
+
+        Organizations = result;
+
+        await base.OnInitializedAsync();
+    }
+}

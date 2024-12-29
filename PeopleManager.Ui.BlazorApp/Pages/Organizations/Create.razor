@@ -1,0 +1,52 @@
+﻿@using PeopleManager.Dto.Requests
+@using PeopleManager.Sdk
+
+@attribute [Route(AppRoutes.Organizations.Create)]
+@inherits AdminPageComponent
+
+@inject OrganizationSdk OrganizationSdk
+
+@inject NavigationManager NavigationManager
+
+<h3>Create</h3>
+
+@if (Model is not null)
+{
+    <EditForm Model="Model" OnValidSubmit="CreateOrganization">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+        
+        <CreateEdit Model="Model"></CreateEdit>
+        
+        <a class="btn btn-primary" href="@AppRoutes.Organizations.Index">Back</a>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </EditForm>
+}
+
+@code {
+    private OrganizationRequest? Model { get; set; }
+    
+    protected override Task OnInitializedAsync()
+    {
+        Model = new OrganizationRequest
+            {
+                Name = string.Empty
+            };
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task CreateOrganization()
+    {
+        if (Model is null)
+        {
+            return;
+        }
+
+        await OrganizationSdk.Create(Model);
+
+        //If something was wrong, we ignore it for now :)
+
+        NavigationManager.NavigateTo(AppRoutes.Organizations.Index);
+    }
+}
